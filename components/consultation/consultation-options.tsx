@@ -24,8 +24,8 @@ const ConsultationOptions = () => {
   const [error, setError] = useState("")
 
   // Demo configuration - Replace with actual values in production
-  const DOCTOR_WHATSAPP = "919075259313" // Demo: 9075259313
-  const DOCTOR_EMAIL = "patilvinita787@gmail.com" // Demo email
+  const DOCTOR_WHATSAPP = "918446552477" // WhatsApp: 8446552477
+  const DOCTOR_EMAIL = "veerajmatnale@gmail.com"
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzneYY_dLj01wFomN0XtoiRUVdr7RZp_lWvzuq-k_aLdb2ND7N7fFooR_hLZInLzglZ/exec" // Replace with your deployed script URL
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

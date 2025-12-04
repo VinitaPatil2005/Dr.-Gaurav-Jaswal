@@ -2,113 +2,66 @@
 
 import { useState, useEffect } from "react"
 import { useInView } from "@/components/home/use-in-view"
-import { Search, Zap } from "lucide-react"
+import { Search, Zap, Clock, Calendar } from "lucide-react"
+import { blogArticles, BlogArticle, getArticleById, getRelatedArticles } from "@/lib/blog-data"
+import BlogArticleView from "./blog-article-view"
 
 const BlogSection = () => {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [filteredArticles, setFilteredArticles] = useState<typeof allArticles>([])
+  const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([])
+  const [selectedArticle, setSelectedArticle] = useState<BlogArticle | null>(null)
+  const [email, setEmail] = useState("")
 
-  const categories = ["All", "Prevention", "Treatment", "Technology", "Nutrition", "Support", "Family Care", "Research"]
-
-  const allArticles = [
-    {
-      id: 1,
-      title: "Early Detection: The Key to Successful Cancer Treatment",
-      category: "Prevention",
-      excerpt:
-        "Learn about the importance of early screening and detection in improving treatment outcomes and survival rates.",
-      date: "Dec 15, 2024",
-      featured: true,
-      image: "/early-cancer-detection.jpg",
-    },
-    {
-      id: 2,
-      title: "Advanced Radiation Therapy: IMRT vs VMAT",
-      category: "Treatment",
-      excerpt:
-        "Understanding the differences between modern radiation therapy techniques and their clinical applications.",
-      date: "Dec 12, 2024",
-      featured: false,
-      image: "/radiation-therapy.jpg",
-    },
-    {
-      id: 3,
-      title: "AI in Cancer Diagnosis: Revolutionizing Medical Imaging",
-      category: "Technology",
-      excerpt:
-        "Explore how artificial intelligence is improving cancer detection accuracy and reducing diagnostic time.",
-      date: "Dec 10, 2024",
-      featured: false,
-      image: "/ai-medical-imaging.jpg",
-    },
-    {
-      id: 4,
-      title: "Nutrition During Cancer Treatment: A Practical Guide",
-      category: "Nutrition",
-      excerpt: "Evidence-based nutritional strategies to support your body during cancer treatment and recovery.",
-      date: "Dec 8, 2024",
-      featured: false,
-      image: "/cancer-nutrition.jpg",
-    },
-    {
-      id: 5,
-      title: "Supporting Your Loved One Through Cancer Treatment",
-      category: "Family Care",
-      excerpt: "Guidance for family members and caregivers on providing emotional and practical support.",
-      date: "Dec 5, 2024",
-      featured: false,
-      image: "/cancer-support-family.jpg",
-    },
-    {
-      id: 6,
-      title: "Managing Side Effects: Practical Tips for Patients",
-      category: "Support",
-      excerpt: "Comprehensive guide to managing common side effects and maintaining quality of life during treatment.",
-      date: "Nov 30, 2024",
-      featured: false,
-      image: "/cancer-treatment-side-effects.jpg",
-    },
-    {
-      id: 7,
-      title: "Clinical Trials: Understanding Your Treatment Options",
-      category: "Research",
-      excerpt: "What you need to know about participating in clinical trials and accessing cutting-edge treatments.",
-      date: "Nov 28, 2024",
-      featured: false,
-      image: "/clinical-trials.jpg",
-    },
-    {
-      id: 8,
-      title: "Precision Medicine: Tailoring Treatment to Your Needs",
-      category: "Technology",
-      excerpt: "How genomic testing and personalized medicine are transforming cancer treatment approaches.",
-      date: "Nov 25, 2024",
-      featured: false,
-      image: "/precision-medicine.png",
-    },
-  ]
+  const categories = ["All", "Prevention", "Treatment", "Technology", "Research"]
 
   useEffect(() => {
-    let filtered = allArticles
+    let filtered = blogArticles
 
     if (selectedCategory !== "All") {
-      filtered = filtered.filter((article) => article.category === selectedCategory)
+      filtered = blogArticles.filter(article => article.category === selectedCategory)
     }
 
     if (searchTerm) {
       filtered = filtered.filter(
         (article) =>
           article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()),
+          article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     }
 
     setFilteredArticles(filtered)
   }, [searchTerm, selectedCategory])
 
-  const featuredArticle = allArticles.find((a) => a.featured)
+  const featuredArticles = blogArticles.filter(article => article.featured)
+  const featuredArticle = featuredArticles[0]
+
+  const handleArticleClick = (article: BlogArticle) => {
+    setSelectedArticle(article)
+    // Scroll to top when opening article
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleBackToBlog = () => {
+    setSelectedArticle(null)
+    // Scroll to top when going back
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle newsletter subscription
+    console.log('Newsletter subscription:', email)
+    setEmail('')
+    // You can integrate with your email service here
+  }
+
+  // Show article view if an article is selected
+  if (selectedArticle) {
+    return <BlogArticleView article={selectedArticle} onBack={handleBackToBlog} />
+  }
 
   return (
     <section ref={ref} className="pt-28 sm:pt-32 md:pt-36 pb-16 sm:pb-20 bg-linear-to-b from-brand-blue-50 via-brand-purple-50/50 to-white relative overflow-hidden min-h-screen">
@@ -166,7 +119,10 @@ const BlogSection = () => {
         {/* Featured Article */}
         {featuredArticle && selectedCategory === "All" && !searchTerm && (
           <div className={`mb-12 sm:mb-16 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '500ms' }}>
-            <div className="relative overflow-hidden rounded-2xl bg-card border border-border group cursor-pointer hover:border-primary hover:shadow-xl transition-all duration-300">
+            <div 
+              onClick={() => handleArticleClick(featuredArticle)}
+              className="relative overflow-hidden rounded-2xl bg-card border border-border group cursor-pointer hover:border-primary hover:shadow-xl transition-all duration-300"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                 {/* Image */}
                 <div className="overflow-hidden h-64 md:h-auto">
@@ -185,14 +141,23 @@ const BlogSection = () => {
                       Featured Article
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
                     {featuredArticle.title}
                   </h2>
-                  <p className="text-foreground/70 mb-6">{featuredArticle.excerpt}</p>
+                  <p className="text-foreground/70 mb-6 text-base">{featuredArticle.excerpt}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground/60">{featuredArticle.date}</span>
-                    <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all">
-                      Read More
+                    <div className="flex items-center gap-4 text-sm text-foreground/60">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={14} />
+                        <span>{featuredArticle.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock size={14} />
+                        <span>{featuredArticle.readTime}</span>
+                      </div>
+                    </div>
+                    <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all group-hover:scale-105">
+                      Read Article
                     </button>
                   </div>
                 </div>
@@ -207,6 +172,7 @@ const BlogSection = () => {
             {filteredArticles.map((article, index) => (
               <div
                 key={article.id}
+                onClick={() => handleArticleClick(article)}
                 className={`group rounded-2xl overflow-hidden bg-card border border-border hover:border-primary hover:shadow-xl transition-all duration-500 cursor-pointer ${
                   inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 }`}
@@ -227,16 +193,24 @@ const BlogSection = () => {
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">
                       {article.category}
                     </span>
-                    <span className="text-xs text-foreground/60">{article.date}</span>
+                    <div className="flex items-center gap-1 text-xs text-foreground/60">
+                      <Clock size={12} />
+                      <span>{article.readTime}</span>
+                    </div>
                   </div>
 
                   <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
                     {article.title}
                   </h3>
 
-                  <p className="text-foreground/70 text-sm mb-5 line-clamp-2">{article.excerpt}</p>
+                  <p className="text-foreground/70 text-sm mb-4 line-clamp-3">{article.excerpt}</p>
 
-                  <button className="w-full bg-primary/10 text-primary px-4 py-2.5 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-foreground/60">{article.date}</span>
+                    <span className="text-xs text-foreground/60">By {article.author}</span>
+                  </div>
+
+                  <button className="w-full bg-primary/10 text-primary px-4 py-2.5 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group-hover:scale-105">
                     Read Article
                   </button>
                 </div>
@@ -278,10 +252,13 @@ const BlogSection = () => {
                 Subscribe to our newsletter for the latest articles, treatment updates, and health tips delivered directly to your inbox.
               </p>
               
-              <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
+                  required
                   className="flex-1 px-5 py-4 rounded-xl border-2 border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all"
                 />
                 <button
