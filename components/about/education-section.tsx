@@ -55,7 +55,7 @@ const EducationSection = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-4 py-2 mb-4">
-              <Sparkles size={16} className="text-yellow-300" />
+              
               <span className="text-white/90 text-sm font-medium">Academic Excellence</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">

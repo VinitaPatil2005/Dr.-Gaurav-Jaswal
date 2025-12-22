@@ -91,7 +91,6 @@ const AIProductSuite = () => {
         {/* Header */}
         <div className={`text-center mb-8 sm:mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"}`}>
           <div className="inline-flex items-center gap-2 bg-linear-to-r from-brand-blue-50 to-brand-purple-50 border border-brand-purple-100 rounded-full px-4 py-1.5 mb-4">
-            <Sparkles size={14} className="text-[#5E3491]" />
             <span className="text-[#5E3491] text-xs font-medium">Powered by Advanced AI</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
@@ -118,7 +117,7 @@ const AIProductSuite = () => {
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 {/* Image - Clean white background */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-gray-50">
+                <div className="relative aspect-16/10 overflow-hidden bg-gray-50">
                   <img 
                     src={product.image} 
                     alt={product.title}
@@ -302,7 +301,6 @@ const AIProductSuite = () => {
         {/* Bottom CTA */}
         <div className={`text-center mt-8 transition-all duration-700 delay-500 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <button className="inline-flex items-center gap-2 bg-foreground text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-foreground/90 transition-colors">
-            <Sparkles size={14} />
             Schedule a Demo
             <ArrowRight size={14} />
           </button>

@@ -28,7 +28,7 @@ const StatsCards = () => {
             return (
               <div
                 key={index}
-                className={`flex-shrink-0 snap-center bg-white/10 backdrop-blur-sm rounded-xl p-4 min-w-[140px] border border-white/20 transition-all duration-700 transform ${
+                className={`shrink-0 snap-center bg-white/10 backdrop-blur-sm rounded-xl p-4 min-w-[140px] border border-white/20 transition-all duration-700 transform ${
                   inView ? "opacity-100 scale-100" : "opacity-0 scale-90"
                 } active:scale-95`}
                 style={{ transitionDelay: `${index * 100}ms` }}

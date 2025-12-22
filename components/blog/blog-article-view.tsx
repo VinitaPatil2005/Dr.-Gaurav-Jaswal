@@ -132,7 +132,7 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
   return (
     <div ref={articleRef} className="min-h-screen bg-white">
       {/* Reading Progress Bar - above navbar */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-1 bg-gray-200">
+      <div className="fixed top-0 left-0 right-0 z-60 h-1 bg-gray-200">
         <div 
           className="h-full bg-linear-to-r from-[#2F72B8] via-[#3B96D7] to-[#5E3491] transition-all duration-150"
           style={{ width: `${readingProgress}%` }}
@@ -190,11 +190,11 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
                 <span className="font-medium xs:hidden">{article.author.split(' ')[0]}</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-2">
-                <Calendar size={12} className="sm:w-[14px] sm:h-[14px]" />
+                <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
                 <span>{article.date}</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-2">
-                <Clock size={12} className="sm:w-[14px] sm:h-[14px]" />
+                <Clock size={12} className="sm:w-3.5 sm:h-3.5" />
                 <span>{article.readTime}</span>
               </div>
               <div className="hidden sm:flex items-center gap-2">

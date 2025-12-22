@@ -62,7 +62,7 @@ const ConsultationForm = () => {
               <div className="space-y-6">
                 <div className="p-6 bg-linear-to-br from-red-50 to-red-100/50 border-2 border-red-300 rounded-xl">
                   <div className="flex items-start gap-4">
-                    <AlertCircle className="text-red-600 flex-shrink-0 mt-1" size={28} />
+                    <AlertCircle className="text-red-600 shrink-0 mt-1" size={28} />
                     <div>
                       <h3 className="text-xl font-bold text-red-900 mb-2">Emergency Contact</h3>
                       <p className="text-red-800 mb-4">For urgent medical concerns, please call immediately:</p>
@@ -81,7 +81,7 @@ const ConsultationForm = () => {
                   <h3 className="text-xl font-bold text-foreground">Regular Contact Information</h3>
 
                   <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border">
-                    <Phone size={24} className="text-primary flex-shrink-0" />
+                    <Phone size={24} className="text-primary shrink-0" />
                     <div>
                       <p className="text-sm text-foreground/60">Phone</p>
                       <a href="tel:+917009521950" className="font-semibold text-primary hover:underline">
@@ -91,7 +91,7 @@ const ConsultationForm = () => {
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border">
-                    <Mail size={24} className="text-primary flex-shrink-0" />
+                    <Mail size={24} className="text-primary shrink-0" />
                     <div>
                       <p className="text-sm text-foreground/60">Email</p>
                       <div className="flex flex-col">
@@ -244,7 +244,7 @@ const ConsultationForm = () => {
                         checked={formData.consent}
                         onChange={handleChange}
                         required
-                        className="w-5 h-5 rounded border-border text-primary cursor-pointer mt-1 flex-shrink-0"
+                        className="w-5 h-5 rounded border-border text-primary cursor-pointer mt-1 shrink-0"
                       />
                       <p className="text-sm text-foreground/70">
                         I agree to the privacy policy. All personal and medical information is kept strictly

@@ -124,7 +124,7 @@ const ExpertiseGrid = () => {
                   style={{ transform: `translateX(-${clinicalIndex * 100}%)` }}
                 >
                   {clinicalCare.map((item, index) => (
-                    <div key={index} className="w-full flex-shrink-0 px-1">
+                    <div key={index} className="w-full shrink-0 px-1">
                       {renderCard(item, 'blue')}
                     </div>
                   ))}
@@ -191,7 +191,7 @@ const ExpertiseGrid = () => {
                   style={{ transform: `translateX(-${innovationIndex * 100}%)` }}
                 >
                   {innovationLeadership.map((item, index) => (
-                    <div key={index} className="w-full flex-shrink-0 px-1">
+                    <div key={index} className="w-full shrink-0 px-1">
                       {renderCard(item, 'purple')}
                     </div>
                   ))}
