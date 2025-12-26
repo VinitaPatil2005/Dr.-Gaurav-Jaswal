@@ -1,6 +1,6 @@
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import BlogSection from "@/components/blog/blog-section"
+import Header from "../../components/header"
+import Footer from "../../components/footer"
+import BlogSection from "../../components/blog/blog-section"
 
 const BlogPage = () => {
   return (

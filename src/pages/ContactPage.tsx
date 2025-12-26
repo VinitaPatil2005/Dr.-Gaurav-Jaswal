@@ -1,6 +1,6 @@
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import ContactSection from "@/components/contact/contact-section"
+import Header from "../../components/header"
+import Footer from "../../components/footer"
+import ContactSection from "../../components/contact/contact-section"
 
 const ContactPage = () => {
   return (

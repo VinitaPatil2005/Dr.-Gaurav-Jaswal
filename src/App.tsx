@@ -9,6 +9,7 @@ import {
   ContactPage,
   HomePage,
 } from "./pages"
+import AdminPage from "./pages/AdminPage"
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -26,14 +27,14 @@ const App = () => {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/consultation" element={<ConsultationPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/ai-products" element={<AiProductsPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )

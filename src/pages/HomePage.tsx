@@ -1,9 +1,9 @@
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import HeroSection from "@/components/home/hero-section"
-import ExpertiseSection from "@/components/home/expertise-section"
-import ConsultationCTA from "@/components/home/consultation-cta"
-import StatsCards from "@/components/home/stats-cards"
+import Header from "../../components/header"
+import Footer from "../../components/footer"
+import HeroSection from "../../components/home/hero-section"
+import ExpertiseSection from "../../components/home/expertise-section"
+import ConsultationCTA from "../../components/home/consultation-cta"
+import StatsCards from "../../components/home/stats-cards"
 
 const HomePage = () => {
   return (

@@ -1,26 +1,57 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useInView } from "@/components/home/use-in-view"
+import { useInView } from "../../components/home/use-in-view"
 import { Search, Zap, Clock, Calendar } from "lucide-react"
-import { blogArticles, BlogArticle, getArticleById, getRelatedArticles } from "@/lib/blog-data"
+import { blogArticles, BlogArticle } from "../../lib/blog-data"
 import BlogArticleView from "./blog-article-view"
 
-const BlogSection = () => {
+export default function BlogSection() {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [allArticles, setAllArticles] = useState<BlogArticle[]>([])
   const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([])
   const [selectedArticle, setSelectedArticle] = useState<BlogArticle | null>(null)
   const [email, setEmail] = useState("")
 
-  const categories = ["All", "Prevention", "Treatment", "Technology", "Research"]
+  const categories = ["All", "General", "AI", "Health", "Technology", "Education", "Prevention", "Treatment", "Research"]
 
   useEffect(() => {
-    let filtered = blogArticles
+    fetch("http://localhost:3001/api/blogs")
+      .then(res => res.json())
+      .then(apiBlogs => {
+        const combinedArticles = [...blogArticles];
+        apiBlogs.forEach((apiBlog: any) => {
+          if (!combinedArticles.some(article => article.id === apiBlog._id)) {
+            combinedArticles.push({
+              id: apiBlog._id,
+              title: apiBlog.title,
+              category: apiBlog.category,
+              excerpt: apiBlog.excerpt,
+              content: apiBlog.content,
+              date: new Date(apiBlog.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+              featured: apiBlog.featured,
+              image: apiBlog.image || "/placeholder.svg",
+              readTime: apiBlog.readTime,
+              author: apiBlog.author,
+              tags: apiBlog.tags,
+            });
+          }
+        });
+        setAllArticles(combinedArticles);
+      })
+      .catch(err => {
+        console.error("Error fetching blogs:", err)
+        setAllArticles(blogArticles);
+      });
+  }, [])
+
+  useEffect(() => {
+    let filtered = allArticles
 
     if (selectedCategory !== "All") {
-      filtered = blogArticles.filter(article => article.category === selectedCategory)
+      filtered = allArticles.filter(article => article.category === selectedCategory)
     }
 
     if (searchTerm) {
@@ -28,14 +59,14 @@ const BlogSection = () => {
         (article) =>
           article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          (article.tags && article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
       )
     }
 
     setFilteredArticles(filtered)
-  }, [searchTerm, selectedCategory])
+  }, [searchTerm, selectedCategory, allArticles])
 
-  const featuredArticles = blogArticles.filter(article => article.featured)
+  const featuredArticles = allArticles.filter(article => article.featured)
   const featuredArticle = featuredArticles[0]
 
   const handleArticleClick = (article: BlogArticle) => {
@@ -60,7 +91,7 @@ const BlogSection = () => {
 
   // Show article view if an article is selected
   if (selectedArticle) {
-    return <BlogArticleView article={selectedArticle} onBack={handleBackToBlog} />
+    return <BlogArticleView article={selectedArticle} allArticles={allArticles} onBack={handleBackToBlog} />
   }
 
   return (
@@ -149,7 +180,7 @@ const BlogSection = () => {
                     <div className="flex items-center gap-4 text-sm text-foreground/60">
                       <div className="flex items-center gap-1">
                         <Calendar size={14} />
-                        <span>{featuredArticle.date}</span>
+                        <span>{new Date(featuredArticle.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock size={14} />
@@ -168,12 +199,12 @@ const BlogSection = () => {
 
         {/* Articles Grid */}
         {filteredArticles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {filteredArticles.map((article, index) => (
               <div
-                key={article.id}
+                key={article.id.toString()}
                 onClick={() => handleArticleClick(article)}
-                className={`group rounded-2xl overflow-hidden bg-card border border-border hover:border-primary hover:shadow-xl transition-all duration-500 cursor-pointer ${
+                className={`group rounded-2xl overflow-hidden bg-card border border-border hover:border-primary hover:shadow-xl transition-all duration-500 cursor-pointer mb-8 ${
                   inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 }`}
                 style={{ transitionDelay: `${600 + index * 100}ms` }}
@@ -206,7 +237,7 @@ const BlogSection = () => {
                   <p className="text-foreground/70 text-sm mb-4 line-clamp-3">{article.excerpt}</p>
 
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs text-foreground/60">{article.date}</span>
+                    <span className="text-xs text-foreground/60">{new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     <span className="text-xs text-foreground/60">By {article.author}</span>
                   </div>
 
@@ -279,5 +310,3 @@ const BlogSection = () => {
     </section>
   )
 }
-
-export default BlogSection

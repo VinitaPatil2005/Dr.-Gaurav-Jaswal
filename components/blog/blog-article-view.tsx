@@ -2,14 +2,17 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, Calendar, Clock, User, Tag, Share2, Facebook, Twitter, Linkedin, Mail, BookOpen, ChevronUp, Heart, Bookmark, Copy, Check } from "lucide-react"
-import { BlogArticle, blogArticles } from "@/lib/blog-data"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { BlogArticle, getRelatedArticles } from "../../lib/blog-data"
 
 interface BlogArticleViewProps {
   article: BlogArticle
+  allArticles: BlogArticle[]
   onBack: () => void
 }
 
-const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
+const BlogArticleView = ({ article, allArticles, onBack }: BlogArticleViewProps) => {
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [readingProgress, setReadingProgress] = useState(0)
   const [showBackToTop, setShowBackToTop] = useState(false)
@@ -66,68 +69,8 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
     setShowShareMenu(false)
   }
 
-  const formatContent = (content: string) => {
-    return content
-      .split('\n')
-      .map((line, index) => {
-        // Main title (skip it as we show it in header)
-        if (line.startsWith('# ') && index < 5) {
-          return ''
-        }
-        // Section headers
-        if (line.startsWith('## ')) {
-          return `<h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-4 sm:mb-6 mt-8 sm:mt-12 pb-2 sm:pb-3 border-b-2 border-primary/20 flex items-center gap-2 sm:gap-3"><span class="w-1 h-6 sm:h-8 bg-linear-to-b from-[#2F72B8] to-[#5E3491] rounded-full shrink-0"></span>${line.substring(3)}</h2>`
-        }
-        if (line.startsWith('### ')) {
-          return `<h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-primary mb-3 sm:mb-4 mt-6 sm:mt-8">${line.substring(4)}</h3>`
-        }
-        if (line.startsWith('#### ')) {
-          return `<h4 class="text-base sm:text-lg md:text-xl font-semibold text-foreground mb-2 sm:mb-3 mt-4 sm:mt-6">${line.substring(5)}</h4>`
-        }
-
-        // Bold standalone text (like important notes)
-        if (line.startsWith('**') && line.endsWith('**') && !line.includes(': ')) {
-          return `<p class="font-bold text-foreground text-base sm:text-lg mb-3 sm:mb-4 p-3 sm:p-4 bg-primary/5 border-l-4 border-primary rounded-r-lg">${line.slice(2, -2)}</p>`
-        }
-
-        // Lists with bold items
-        if (line.startsWith('- **')) {
-          const match = line.match(/- \*\*(.*?)\*\*:?\s*(.*)?/)
-          if (match) {
-            const label = match[1]
-            const description = match[2] || ''
-            return `<li class="mb-4 flex items-start gap-3"><span class="w-2 h-2 bg-primary rounded-full mt-2.5 shrink-0"></span><span><strong class="text-primary font-semibold">${label}${description ? ':' : ''}</strong> ${description}</span></li>`
-          }
-        }
-        // Regular list items
-        if (line.startsWith('- ')) {
-          return `<li class="mb-3 flex items-start gap-3"><span class="w-2 h-2 bg-primary/60 rounded-full mt-2.5 shrink-0"></span><span>${line.substring(2)}</span></li>`
-        }
-
-        // Italic text (author notes)
-        if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
-          return `<p class="text-foreground/60 italic text-sm sm:text-base mt-6 sm:mt-8 p-4 sm:p-6 bg-linear-to-r from-primary/5 to-transparent border-l-4 border-primary/40 rounded-r-xl">${line.slice(1, -1)}</p>`
-        }
-
-        // Regular paragraphs
-        if (line.trim() && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('*')) {
-          return `<p class="text-foreground/80 leading-relaxed text-base sm:text-lg mb-4 sm:mb-5">${line}</p>`
-        }
-
-        // Empty lines
-        if (!line.trim()) {
-          return `<div class="h-2"></div>`
-        }
-
-        return ''
-      })
-      .join('')
-  }
-
   // Get related articles
-  const relatedArticles = blogArticles
-    .filter(a => a.id !== article.id && a.category === article.category)
-    .slice(0, 2)
+  const relatedArticles = getRelatedArticles(allArticles, article.id, article.category, 2)
 
   return (
     <div ref={articleRef} className="min-h-screen bg-white">
@@ -220,8 +163,7 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsLiked(!isLiked)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-all duration-300 ${
-                isLiked 
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-all duration-300 ${isLiked 
                   ? 'bg-red-100 text-red-600' 
                   : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-500'
               }`}
@@ -231,8 +173,7 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
             </button>
             <button
               onClick={() => setIsBookmarked(!isBookmarked)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-all duration-300 ${
-                isBookmarked 
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-all duration-300 ${isBookmarked 
                   ? 'bg-primary/20 text-primary' 
                   : 'bg-gray-100 text-gray-600 hover:bg-primary/10 hover:text-primary'
               }`}
@@ -246,9 +187,7 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={copyLink}
-              className={`p-2 sm:p-2.5 rounded-full transition-all duration-300 ${
-                copied ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`p-2 sm:p-2.5 rounded-full transition-all duration-300 ${copied ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               title="Copy link"
             >
               {copied ? <Check size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Copy size={16} className="sm:w-[18px] sm:h-[18px]" />}
@@ -280,8 +219,20 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
         {/* Article Content */}
         <article 
           className="prose prose-lg max-w-none article-content"
-          dangerouslySetInnerHTML={{ __html: formatContent(article.content) }}
-        />
+        >
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            // Explicitly define how paragraphs and list items are rendered to ensure proper spacing.
+            // This helps if default prose styles are insufficient or overridden, or if Markdown
+            // input sometimes generates elements without expected margins.
+            components={{
+              p: (props) => <p className="mb-2" {...props} />,
+              ul: ({node, ...props}) => <ul className="mb-4 pl-5 list-disc" {...props} />,
+              ol: ({node, ...props}) => <ol className="mb-4 pl-5 list-decimal" {...props} />,
+              li: ({node, ...props}) => <li className="mb-1" {...props} />,
+            }}
+          >{article.content}</ReactMarkdown>
+        </article>
 
         {/* Tags Section */}
         <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border">
@@ -407,17 +358,13 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
       <div className="hidden lg:flex fixed left-6 top-1/2 -translate-y-1/2 flex-col gap-3 z-40">
         <button
           onClick={() => setIsLiked(!isLiked)}
-          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${
-            isLiked ? 'bg-red-500 text-white' : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'
-          }`}
+          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${isLiked ? 'bg-red-500 text-white' : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'}`}
         >
           <Heart size={18} className={isLiked ? 'fill-current' : ''} />
         </button>
         <button
           onClick={() => setIsBookmarked(!isBookmarked)}
-          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${
-            isBookmarked ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-primary/10 hover:text-primary'
-          }`}
+          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${isBookmarked ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-primary/10 hover:text-primary'}`}
         >
           <Bookmark size={18} className={isBookmarked ? 'fill-current' : ''} />
         </button>
@@ -442,9 +389,7 @@ const BlogArticleView = ({ article, onBack }: BlogArticleViewProps) => {
         </button>
         <button
           onClick={copyLink}
-          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${
-            copied ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
-          }`}
+          className={`w-11 h-11 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${copied ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
         >
           {copied ? <Check size={18} /> : <Copy size={18} />}
         </button>

@@ -1,6 +1,6 @@
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import ConsultationOptions from "@/components/consultation/consultation-options"
+import Header from "../../components/header"
+import Footer from "../../components/footer"
+import ConsultationOptions from "../../components/consultation/consultation-options"
 
 const ConsultationPage = () => {
   return (

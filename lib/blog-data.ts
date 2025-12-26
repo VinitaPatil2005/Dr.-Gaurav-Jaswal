@@ -640,13 +640,13 @@ As we move forward, the integration of AI into cancer care will continue to evol
 ]
 
 // Helper function to get article by ID
-export const getArticleById = (id: number): BlogArticle | undefined => {
-  return blogArticles.find(article => article.id === id)
+export const getArticleById = (articles: BlogArticle[], id: number): BlogArticle | undefined => {
+  return articles.find(article => article.id === id)
 }
 
 // Helper function to get related articles
-export const getRelatedArticles = (currentId: number, category: string, limit: number = 3): BlogArticle[] => {
-  return blogArticles
+export const getRelatedArticles = (articles: BlogArticle[], currentId: number, category: string, limit: number = 3): BlogArticle[] => {
+  return articles
     .filter(article => article.id !== currentId && article.category === category)
     .slice(0, limit)
 }
